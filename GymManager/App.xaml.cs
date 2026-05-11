@@ -1,4 +1,4 @@
-namespace GymManager;
+namespace GymManager.MauiView;
 
 using System.Globalization;
 

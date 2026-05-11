@@ -1,8 +1,8 @@
 ﻿<maui:MauiWinUIApplication
-    x:Class="GymManager.WinUI.App"
+    x:Class="GymManager.MauiView.WinUI.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:maui="using:Microsoft.Maui"
-    xmlns:local="using:GymManager.WinUI">
+    xmlns:local="using:GymManager.MauiView.WinUI">
 
 </maui:MauiWinUIApplication>

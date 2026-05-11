@@ -6,21 +6,70 @@ This document records what has been done so far so the project can be continued 
 
 Build a Windows desktop app for a local gym using .NET MAUI. The app is intended to run on one PC at the gym and manage members, subscriptions, attendance, payments, and reports.
 
-## Current Structure
+## Current Solution Structure
 
 - Solution: `GymSystem.sln`
-- Main app project: `GymManager/GymManager.csproj`
-- Target framework: `.NET 8` Windows, `net8.0-windows10.0.19041.0`
-- SDK pinned by `global.json` to `8.0.300`
+- Core project: `GymManager.Core/GymManager.Core.csproj`
+- Business project: `GymManager.Business/GymManager.Business.csproj`
+- MAUI view project: `GymManager/GymManager.MauiView.csproj`
+- Target SDK: `.NET 8`, pinned by `global.json` to `8.0.300`
+- MAUI target framework: `net8.0-windows10.0.19041.0`
+- App title: `إدارة الجيم`
+- Local database: SQLite file named `gym-manager.db`
+
+The MAUI project file is named `GymManager.MauiView.csproj`. The physical folder is still `GymManager` because the folder rename was blocked while the project was open/locked by another process. The project name and architecture are already correct.
+
+## Architecture Rules
+
+The solution is split into three layers:
+
+- `GymManager.Core`
+  - Holds database-shaped models and enums only.
+  - Does not reference Business or MAUI.
+  - Current contents:
+    - `Models/Member.cs`
+    - `Enums/MembershipPlan.cs`
+    - `Enums/MembershipStatus.cs`
+
+- `GymManager.Business`
+  - Holds application logic.
+  - Holds the current SQLite storage service for app data.
+  - References `GymManager.Core`.
+  - Does not reference MAUI.
+  - Current contents:
+    - `Services/MemberDirectoryService.cs`
+    - `Models/AddMemberRequest.cs`
+    - `Models/DashboardSummary.cs`
+    - `Models/MemberDetails.cs`
+    - `Models/MemberListItem.cs`
+
+- `GymManager.MauiView`
+  - Holds only the app UI and page event handling.
+  - References `GymManager.Business`.
+  - Does not contain member subscription rules directly.
+  - Current main UI files:
+    - `App.xaml.cs`
+    - `AppShell.xaml`
+    - `MemberDetailsPage.xaml`
+    - `MemberDetailsPage.xaml.cs`
+    - `MainPage.xaml`
+    - `MainPage.xaml.cs`
+
+Dependency direction:
+
+```text
+GymManager.MauiView -> GymManager.Business -> GymManager.Core
+```
 
 ## Completed Work
 
 ### Initial MAUI App
 
-- Created a .NET MAUI app named `GymManager`.
-- Limited the app to Windows because it will run on one local PC.
+- Created a .NET MAUI app for Windows.
+- Limited the app to one local Windows PC.
 - Added the project to `GymSystem.sln`.
 - Added `WindowsSdkPackageVersion` because the Windows App SDK required it.
+- Retargeted the app to .NET 8 for Visual Studio compatibility.
 
 ### Main Screen
 
@@ -34,17 +83,28 @@ Build a Windows desktop app for a local gym using .NET MAUI. The app is intended
 - Added an in-memory member list.
 - Added search by member name, phone, or subscription plan.
 - Added sample members for testing.
+- Selecting a member from the list opens the member details page.
+
+### Member Details Page
+
+- Added a dedicated Arabic page for member information.
+- Shows member ID, name, phone, plan, start date, end date, registration date, subscription status, and remaining/expired days.
+- The page loads data from SQLite through `MemberDirectoryService`.
+- The route is registered in `AppShell.xaml.cs`.
+- The page includes an `إلغاء العضوية` button.
+- Canceling a membership keeps the member record, changes the status to `ملغي`, stores the cancellation date, and hides the cancel button.
 
 ### Arabic Support
 
-- Arabic is now the default user-facing language.
+- Arabic is the default user-facing language.
 - App culture is set to `ar-EG`.
 - Main content uses right-to-left layout.
 - The Windows title bar remains normal so minimize, maximize, and close buttons stay on the right.
-- Visible UI text, placeholders, plan names, status names, validation messages, and dates were translated to Arabic.
+- Visible UI text, placeholders, plan names, status names, validation messages, and dates are Arabic.
 
 ### Add Member Form
 
+- `رقم العضوية` is generated automatically by the system when adding a member.
 - Input text color was fixed so typed text is visible.
 - Separate labels were removed where placeholders are enough.
 - Form inputs now use clearer background colors and consistent height.
@@ -53,23 +113,57 @@ Build a Windows desktop app for a local gym using .NET MAUI. The app is intended
   - `ربع سنوي`
   - `سنوي`
 
-## Important Files
+### Architecture Split
 
-- `GymManager/App.xaml.cs`: sets Arabic culture.
-- `GymManager/AppShell.xaml`: app shell and title.
-- `GymManager/MainPage.xaml`: main Arabic dashboard UI.
-- `GymManager/MainPage.xaml.cs`: temporary in-memory member logic.
-- `GymManager/DEVELOPMENT_PLAN.md`: high-level development plan.
-- `global.json`: pins the .NET SDK used by the project.
+- Added `GymManager.Core` for models/enums.
+- Added `GymManager.Business` for application logic.
+- Renamed the MAUI project file to `GymManager.MauiView.csproj`.
+- Wired project references:
+  - Business references Core.
+  - MauiView references Business.
+- Moved member add/search/dashboard logic out of `MainPage.xaml.cs` into `MemberDirectoryService`.
+- `MainPage.xaml.cs` now only handles UI events, form clearing, and binding refresh.
+
+### SQLite Storage
+
+- Added `Microsoft.Data.Sqlite` to `GymManager.Business`.
+- `MemberDirectoryService` now stores members in a SQLite database instead of an in-memory list.
+- The MAUI app passes the database path to the business service:
+  - `Path.Combine(FileSystem.AppDataDirectory, "gym-manager.db")`
+- The service automatically creates the database folder if needed.
+- The service automatically creates the `Members` table on first run.
+- Existing databases are migrated automatically with cancellation columns when needed.
+- Sample members are inserted only when the table is empty.
+- New members are saved permanently and should remain available after closing and reopening the app.
+- Member IDs are generated by SQLite and stored in the `Members.Id` primary key, so duplicates are not allowed.
+- Searching with a normal ID number, for example `4`, returns only the member whose ID is exactly `4`.
+- Phone number search still works for numbers that start with `0`.
+- Search also supports member name and subscription plan.
+- The local database file is ignored by Git through `.gitignore` using `*.db`, `*.sqlite`, and `*.sqlite3`.
+
+### Membership Plans And Statuses
+
+- Plans currently supported:
+  - `شهري`
+  - `ربع سنوي`
+  - `سنوي`
+  - `يومي`
+- Statuses currently supported:
+  - `نشط`
+  - `تجديد قريب`
+  - `منتهي`
+  - `ملغي`
 
 ## Current Limitations
 
-- Members are not saved permanently yet. Data is only in memory.
 - Attendance and payments are only represented in the dashboard, not implemented yet.
-- There is no SQLite database yet.
 - There is no edit/delete member workflow yet.
 - There are no reports yet.
 
 ## Recommended Next Step
 
-Add SQLite local storage so members are saved permanently on the gym PC. After that, move the in-memory member logic from `MainPage.xaml.cs` into models and services.
+Add member edit/delete workflows and then expand SQLite tables for payments and attendance. The likely next structure is:
+
+- Add database entities/configuration in `GymManager.Core`.
+- Keep repository/storage services in `GymManager.Business`.
+- Keep `GymManager.MauiView` calling business services only.

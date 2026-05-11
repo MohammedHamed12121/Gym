@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="GymManager.MainPage"
+             x:Class="GymManager.MauiView.MainPage"
              FlowDirection="RightToLeft"
              BackgroundColor="#F6F7F9">
 
     <ContentPage.Resources>
         <Style x:Key="FormInputStyle" TargetType="Entry">
-            <Setter Property="TextColor" Value="#18202B" />
+            <Setter Property="TextColor" Value="#000000" />
             <Setter Property="PlaceholderColor" Value="#7B8794" />
             <Setter Property="BackgroundColor" Value="#F8FAFC" />
             <Setter Property="HeightRequest" Value="46" />
@@ -15,7 +15,7 @@
         </Style>
 
         <Style x:Key="FormPickerStyle" TargetType="Picker">
-            <Setter Property="TextColor" Value="#18202B" />
+            <Setter Property="TextColor" Value="#000000" />
             <Setter Property="TitleColor" Value="#7B8794" />
             <Setter Property="BackgroundColor" Value="#F8FAFC" />
             <Setter Property="HeightRequest" Value="65" />
@@ -23,7 +23,7 @@
         </Style>
 
         <Style x:Key="FormDatePickerStyle" TargetType="DatePicker">
-            <Setter Property="TextColor" Value="#18202B" />
+            <Setter Property="TextColor" Value="#000000" />
             <Setter Property="BackgroundColor" Value="#F8FAFC" />
             <Setter Property="HeightRequest" Value="46" />
         </Style>
@@ -40,24 +40,6 @@
                        FontSize="14"
                        TextColor="#647084" />
             </VerticalStackLayout>
-
-            <Border Grid.Column="1"
-                    BackgroundColor="#FFFFFF"
-                    Stroke="#DDE3EA"
-                    StrokeShape="RoundRectangle 8"
-                    Padding="14,10"
-                    VerticalOptions="Center">
-                <HorizontalStackLayout Spacing="8">
-                    <BoxView WidthRequest="10"
-                             HeightRequest="10"
-                             CornerRadius="5"
-                             Color="#22A06B"
-                             VerticalOptions="Center" />
-                    <Label Text="سيتم حفظ البيانات محلياً"
-                           TextColor="#354052"
-                           FontSize="13" />
-                </HorizontalStackLayout>
-            </Border>
         </Grid>
 
         <Grid Grid.Row="1"
@@ -120,13 +102,7 @@
 
                         <Picker x:Name="PlanPicker"
                                 Title="نوع الاشتراك"
-                                Style="{StaticResource FormPickerStyle}">
-                            <Picker.Items>
-                                <x:String>شهري</x:String>
-                                <x:String>ربع سنوي</x:String>
-                                <x:String>سنوي</x:String>
-                            </Picker.Items>
-                        </Picker>
+                                Style="{StaticResource FormPickerStyle}" />
 
                         <DatePicker x:Name="StartDatePicker"
                                     Format="dd MMMM yyyy"
@@ -165,14 +141,18 @@
 
                         <SearchBar Grid.Column="1"
                                    x:Name="MemberSearchBar"
-                                   Placeholder="بحث عن عضو"
+                                   Placeholder="بحث بالاسم أو رقم العضوية"
+                                   TextColor="#000000"
+                                   PlaceholderColor="#7B8794"
+                                   BackgroundColor="#F8FAFC"
                                    FlowDirection="RightToLeft"
                                    TextChanged="OnSearchTextChanged" />
                     </Grid>
 
                     <CollectionView Grid.Row="1"
                                     x:Name="MembersCollection"
-                                    SelectionMode="None">
+                                    SelectionMode="Single"
+                                    SelectionChanged="OnMemberSelectionChanged">
                         <CollectionView.EmptyView>
                             <Grid Padding="24">
                                 <Label Text="لا يوجد أعضاء حتى الآن."
@@ -190,6 +170,9 @@
                                         BackgroundColor="#FFFFFF">
                                     <Grid ColumnDefinitions="*,150,120" ColumnSpacing="12">
                                         <VerticalStackLayout Spacing="4">
+                                            <Label Text="{Binding MemberIdText}"
+                                                   FontSize="12"
+                                                   TextColor="#2563EB" />
                                             <Label Text="{Binding Name}"
                                                    FontSize="16"
                                                    FontAttributes="Bold"
@@ -209,7 +192,7 @@
                                         </VerticalStackLayout>
 
                                         <Border Grid.Column="2"
-                                                BackgroundColor="{Binding StatusColor}"
+                                                BackgroundColor="{Binding StatusColorHex}"
                                                 Stroke="Transparent"
                                                 StrokeShape="RoundRectangle 6"
                                                 Padding="10,6"

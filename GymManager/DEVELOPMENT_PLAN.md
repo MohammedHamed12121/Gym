@@ -10,8 +10,13 @@ This app is for one local Windows PC in a gym reception/admin desk. Build it in 
 
 ## Step 2 - Local Database
 
-- Add SQLite storage on the PC.
-- Save members permanently.
+- Keep the architecture split clean: `GymManager.MauiView -> GymManager.Business -> GymManager.Core`.
+- Add SQLite storage on the PC. Done for members.
+- Save members permanently. Done for added members.
+- Generate member IDs automatically and search by exact member ID. Done.
+- Add member details page. Done.
+- Add one-day membership plan. Done.
+- Cancel memberships without deleting member records. Done.
 - Add backup/export support so the gym owner can copy data safely.
 
 ## Step 3 - Memberships And Payments

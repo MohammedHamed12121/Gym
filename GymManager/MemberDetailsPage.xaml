@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GymManager.MauiView.MemberDetailsPage"
+             Title="بيانات العضو"
+             FlowDirection="RightToLeft"
+             BackgroundColor="#F6F7F9">
+
+    <ScrollView>
+        <Grid Padding="24" RowDefinitions="Auto,*" RowSpacing="18">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="14">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="بيانات العضو"
+                           FontSize="28"
+                           FontAttributes="Bold"
+                           TextColor="#18202B" />
+                    <Label Text="{Binding MemberIdText}"
+                           FontSize="14"
+                           TextColor="#2563EB" />
+                </VerticalStackLayout>
+
+                <Border Grid.Column="1"
+                        BackgroundColor="{Binding StatusColorHex}"
+                        Stroke="Transparent"
+                        StrokeShape="RoundRectangle 8"
+                        Padding="18,10"
+                        VerticalOptions="Center">
+                    <Label Text="{Binding Status}"
+                           TextColor="#FFFFFF"
+                           FontSize="14"
+                           FontAttributes="Bold" />
+                </Border>
+            </Grid>
+
+            <Border x:Name="DetailsPanel"
+                    Grid.Row="1"
+                    BackgroundColor="#FFFFFF"
+                    Stroke="#DDE3EA"
+                    StrokeShape="RoundRectangle 8"
+                    Padding="22">
+                <VerticalStackLayout Spacing="18">
+                    <Grid ColumnDefinitions="*,*"
+                          RowDefinitions="Auto,Auto,Auto"
+                          ColumnSpacing="16"
+                          RowSpacing="16">
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="اسم العضو" FontSize="13" TextColor="#647084" />
+                            <Label Text="{Binding Name}" FontSize="20" FontAttributes="Bold" TextColor="#18202B" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="1" Spacing="6">
+                            <Label Text="رقم الهاتف" FontSize="13" TextColor="#647084" />
+                            <Label Text="{Binding Phone}" FontSize="18" TextColor="#18202B" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="1" Spacing="6">
+                            <Label Text="نوع الاشتراك" FontSize="13" TextColor="#647084" />
+                            <Label Text="{Binding Plan}" FontSize="18" TextColor="#18202B" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="6">
+                            <Label Text="حالة الاشتراك" FontSize="13" TextColor="#647084" />
+                            <Label Text="{Binding RemainingDaysText}" FontSize="18" TextColor="#18202B" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="2" Spacing="6">
+                            <Label Text="تاريخ البداية" FontSize="13" TextColor="#647084" />
+                            <Label Text="{Binding StartDateText}" FontSize="16" TextColor="#18202B" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="2" Grid.Column="1" Spacing="6">
+                            <Label Text="تاريخ الانتهاء" FontSize="13" TextColor="#647084" />
+                            <Label Text="{Binding EndDateText}" FontSize="16" TextColor="#18202B" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <BoxView HeightRequest="1" Color="#E6EBF1" />
+
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="معلومات النظام" FontSize="13" TextColor="#647084" />
+                        <Label Text="{Binding CreatedAtText}" FontSize="16" TextColor="#18202B" />
+                        <Label Text="{Binding CanceledAtText}" FontSize="16" TextColor="#6B7280" />
+                    </VerticalStackLayout>
+
+                    <Button x:Name="CancelMembershipButton"
+                            Text="إلغاء العضوية"
+                            BackgroundColor="#C2410C"
+                            TextColor="#FFFFFF"
+                            CornerRadius="6"
+                            IsVisible="{Binding CanCancelMembership}"
+                            Clicked="OnCancelMembershipClicked" />
+
+                    <Button Text="رجوع"
+                            BackgroundColor="#2563EB"
+                            TextColor="#FFFFFF"
+                            CornerRadius="6"
+                            Clicked="OnBackClicked" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border x:Name="NotFoundPanel"
+                    Grid.Row="1"
+                    IsVisible="False"
+                    BackgroundColor="#FFFFFF"
+                    Stroke="#DDE3EA"
+                    StrokeShape="RoundRectangle 8"
+                    Padding="24">
+                <VerticalStackLayout Spacing="12" HorizontalOptions="Center" VerticalOptions="Center">
+                    <Label Text="لم يتم العثور على العضو"
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           TextColor="#18202B"
+                           HorizontalTextAlignment="Center" />
+                    <Button Text="رجوع"
+                            BackgroundColor="#2563EB"
+                            TextColor="#FFFFFF"
+                            CornerRadius="6"
+                            Clicked="OnBackClicked" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+    </ScrollView>
+</ContentPage>

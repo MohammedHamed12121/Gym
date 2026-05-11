@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+namespace GymManager.MauiView;
 
-namespace GymManager;
+using Microsoft.Extensions.Logging;
 
 public static class MauiProgram
 {
