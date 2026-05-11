@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GymManager.MainPage"
+             FlowDirection="RightToLeft"
+             BackgroundColor="#F6F7F9">
+
+    <ContentPage.Resources>
+        <Style x:Key="FormInputStyle" TargetType="Entry">
+            <Setter Property="TextColor" Value="#18202B" />
+            <Setter Property="PlaceholderColor" Value="#7B8794" />
+            <Setter Property="BackgroundColor" Value="#F8FAFC" />
+            <Setter Property="HeightRequest" Value="46" />
+            <Setter Property="HorizontalTextAlignment" Value="Start" />
+        </Style>
+
+        <Style x:Key="FormPickerStyle" TargetType="Picker">
+            <Setter Property="TextColor" Value="#18202B" />
+            <Setter Property="TitleColor" Value="#7B8794" />
+            <Setter Property="BackgroundColor" Value="#F8FAFC" />
+            <Setter Property="HeightRequest" Value="65" />
+            <Setter Property="HorizontalTextAlignment" Value="Start" />
+        </Style>
+
+        <Style x:Key="FormDatePickerStyle" TargetType="DatePicker">
+            <Setter Property="TextColor" Value="#18202B" />
+            <Setter Property="BackgroundColor" Value="#F8FAFC" />
+            <Setter Property="HeightRequest" Value="46" />
+        </Style>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*" Padding="24" RowSpacing="18">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+            <VerticalStackLayout Spacing="2">
+                <Label Text="إدارة الجيم"
+                       FontSize="28"
+                       FontAttributes="Bold"
+                       TextColor="#18202B" />
+                <Label Text="إدارة الأعضاء والاشتراكات والحضور والمدفوعات على جهاز واحد."
+                       FontSize="14"
+                       TextColor="#647084" />
+            </VerticalStackLayout>
+
+            <Border Grid.Column="1"
+                    BackgroundColor="#FFFFFF"
+                    Stroke="#DDE3EA"
+                    StrokeShape="RoundRectangle 8"
+                    Padding="14,10"
+                    VerticalOptions="Center">
+                <HorizontalStackLayout Spacing="8">
+                    <BoxView WidthRequest="10"
+                             HeightRequest="10"
+                             CornerRadius="5"
+                             Color="#22A06B"
+                             VerticalOptions="Center" />
+                    <Label Text="سيتم حفظ البيانات محلياً"
+                           TextColor="#354052"
+                           FontSize="13" />
+                </HorizontalStackLayout>
+            </Border>
+        </Grid>
+
+        <Grid Grid.Row="1"
+              ColumnDefinitions="320,*"
+              RowDefinitions="Auto,*"
+              ColumnSpacing="18"
+              RowSpacing="18">
+            <Grid Grid.ColumnSpan="2"
+                  ColumnDefinitions="*,*,*,*"
+                  ColumnSpacing="12">
+                <Border BackgroundColor="#FFFFFF" Stroke="#DDE3EA" StrokeShape="RoundRectangle 8" Padding="16">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="الأعضاء النشطون" FontSize="13" TextColor="#647084" />
+                        <Label x:Name="ActiveMembersLabel" Text="0" FontSize="26" FontAttributes="Bold" TextColor="#18202B" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Grid.Column="1" BackgroundColor="#FFFFFF" Stroke="#DDE3EA" StrokeShape="RoundRectangle 8" Padding="16">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="ينتهي قريباً" FontSize="13" TextColor="#647084" />
+                        <Label x:Name="ExpiringMembersLabel" Text="0" FontSize="26" FontAttributes="Bold" TextColor="#B7791F" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Grid.Column="2" BackgroundColor="#FFFFFF" Stroke="#DDE3EA" StrokeShape="RoundRectangle 8" Padding="16">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="حضور اليوم" FontSize="13" TextColor="#647084" />
+                        <Label x:Name="CheckInsLabel" Text="0" FontSize="26" FontAttributes="Bold" TextColor="#2563EB" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Grid.Column="3" BackgroundColor="#FFFFFF" Stroke="#DDE3EA" StrokeShape="RoundRectangle 8" Padding="16">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="اشتراكات منتهية" FontSize="13" TextColor="#647084" />
+                        <Label x:Name="PaymentsDueLabel" Text="0" FontSize="26" FontAttributes="Bold" TextColor="#C2410C" />
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+
+            <Border Grid.Row="1"
+                    BackgroundColor="#FFFFFF"
+                    Stroke="#DDE3EA"
+                    StrokeShape="RoundRectangle 8"
+                    Padding="18">
+                <ScrollView>
+                    <VerticalStackLayout Spacing="14">
+                        <Label Text="إضافة عضو"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="#18202B" />
+
+                        <Entry x:Name="NameEntry"
+                               Placeholder="اسم العضو"
+                               Style="{StaticResource FormInputStyle}" />
+
+                        <Entry x:Name="PhoneEntry"
+                               Placeholder="رقم الهاتف"
+                               Style="{StaticResource FormInputStyle}"
+                               Keyboard="Telephone" />
+
+                        <Picker x:Name="PlanPicker"
+                                Title="نوع الاشتراك"
+                                Style="{StaticResource FormPickerStyle}">
+                            <Picker.Items>
+                                <x:String>شهري</x:String>
+                                <x:String>ربع سنوي</x:String>
+                                <x:String>سنوي</x:String>
+                            </Picker.Items>
+                        </Picker>
+
+                        <DatePicker x:Name="StartDatePicker"
+                                    Format="dd MMMM yyyy"
+                                    Style="{StaticResource FormDatePickerStyle}" />
+
+                        <Button Text="إضافة العضو"
+                                BackgroundColor="#2563EB"
+                                TextColor="#FFFFFF"
+                                CornerRadius="6"
+                                Clicked="OnAddMemberClicked" />
+
+                        <Label x:Name="FormMessageLabel"
+                               TextColor="#C2410C"
+                               FontSize="13" />
+                    </VerticalStackLayout>
+                </ScrollView>
+            </Border>
+
+            <Border Grid.Row="1"
+                    Grid.Column="1"
+                    BackgroundColor="#FFFFFF"
+                    Stroke="#DDE3EA"
+                    StrokeShape="RoundRectangle 8"
+                    Padding="18">
+                <Grid RowDefinitions="Auto,*" RowSpacing="14">
+                    <Grid ColumnDefinitions="*,240" ColumnSpacing="14">
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="الأعضاء"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   TextColor="#18202B" />
+                            <Label Text="ابحث عن الأعضاء وراجع حالة الاشتراك."
+                                   FontSize="13"
+                                   TextColor="#647084" />
+                        </VerticalStackLayout>
+
+                        <SearchBar Grid.Column="1"
+                                   x:Name="MemberSearchBar"
+                                   Placeholder="بحث عن عضو"
+                                   FlowDirection="RightToLeft"
+                                   TextChanged="OnSearchTextChanged" />
+                    </Grid>
+
+                    <CollectionView Grid.Row="1"
+                                    x:Name="MembersCollection"
+                                    SelectionMode="None">
+                        <CollectionView.EmptyView>
+                            <Grid Padding="24">
+                                <Label Text="لا يوجد أعضاء حتى الآن."
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       TextColor="#647084" />
+                            </Grid>
+                        </CollectionView.EmptyView>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Border Stroke="#E6EBF1"
+                                        StrokeShape="RoundRectangle 8"
+                                        Padding="14"
+                                        Margin="0,0,0,10"
+                                        BackgroundColor="#FFFFFF">
+                                    <Grid ColumnDefinitions="*,150,120" ColumnSpacing="12">
+                                        <VerticalStackLayout Spacing="4">
+                                            <Label Text="{Binding Name}"
+                                                   FontSize="16"
+                                                   FontAttributes="Bold"
+                                                   TextColor="#18202B" />
+                                            <Label Text="{Binding Phone}"
+                                                   TextColor="#647084"
+                                                   FontSize="13" />
+                                        </VerticalStackLayout>
+
+                                        <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                            <Label Text="{Binding Plan}"
+                                                   TextColor="#354052"
+                                                   FontSize="14" />
+                                            <Label Text="{Binding EndDateText}"
+                                                   TextColor="#647084"
+                                                   FontSize="13" />
+                                        </VerticalStackLayout>
+
+                                        <Border Grid.Column="2"
+                                                BackgroundColor="{Binding StatusColor}"
+                                                Stroke="Transparent"
+                                                StrokeShape="RoundRectangle 6"
+                                                Padding="10,6"
+                                                HorizontalOptions="End"
+                                                VerticalOptions="Center">
+                                            <Label Text="{Binding Status}"
+                                                   TextColor="#FFFFFF"
+                                                   FontSize="12" />
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</ContentPage>
