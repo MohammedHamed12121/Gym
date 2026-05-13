@@ -4,12 +4,34 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:GymManager.MauiView"
-    Shell.FlyoutBehavior="Disabled"
-    Title="">
+    Shell.FlyoutBehavior="Flyout"
+    FlyoutWidth="280"
+    FlowDirection="LeftToRight"
+    Title="إدارة الجيم">
 
-    <ShellContent
-        Title="الرئيسية"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <Shell.FlyoutHeader>
+        <Grid Padding="20,22"
+              BackgroundColor="#18202B"
+              FlowDirection="RightToLeft">
+            <VerticalStackLayout Spacing="4">
+                <Label Text="إدارة الجيم"
+                       FontSize="22"
+                       FontAttributes="Bold"
+                       TextColor="#FFFFFF" />
+                <Label Text="نظام إدارة الجيم المحلي"
+                       FontSize="13"
+                       TextColor="#CBD5E1" />
+            </VerticalStackLayout>
+        </Grid>
+    </Shell.FlyoutHeader>
+
+    <FlyoutItem Title="الرئيسية"
+                Route="Home"
+                FlyoutDisplayOptions="AsSingleItem">
+        <ShellContent
+            Title="الرئيسية"
+            ContentTemplate="{DataTemplate local:MainPage}"
+            Route="MainPage" />
+    </FlyoutItem>
 
 </Shell>

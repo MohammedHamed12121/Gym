@@ -85,6 +85,14 @@ GymManager.MauiView -> GymManager.Business -> GymManager.Core
 - Added sample members for testing.
 - Selecting a member from the list opens the member details page.
 
+### Navigation Shell
+
+- Added a MAUI Shell sidebar/flyout in `AppShell.xaml`.
+- The sidebar currently has one item: `الرئيسية`.
+- The sidebar has an Arabic header for the local gym system.
+- The Shell itself is not globally right-to-left so the Windows minimize, maximize, and close buttons stay on the right.
+- Future pages should be added as new `FlyoutItem` or `ShellContent` entries in `AppShell.xaml`.
+
 ### Member Details Page
 
 - Added a dedicated Arabic page for member information.

@@ -7,6 +7,7 @@ This app is for one local Windows PC in a gym reception/admin desk. Build it in 
 - Create a .NET MAUI Windows app.
 - Replace the default sample screen with a gym dashboard.
 - Add an in-memory member registration form and searchable member list.
+- Add Shell sidebar navigation with the main page. Done.
 
 ## Step 2 - Local Database
 
