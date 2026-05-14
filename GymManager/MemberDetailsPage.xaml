@@ -7,7 +7,7 @@
              BackgroundColor="#F6F7F9">
 
     <ScrollView>
-        <Grid Padding="24" RowDefinitions="Auto,*" RowSpacing="18">
+        <Grid Padding="24" RowDefinitions="Auto,Auto,Auto" RowSpacing="18">
             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="14">
                 <VerticalStackLayout Spacing="4">
                     <Label Text="بيانات العضو"
@@ -80,6 +80,10 @@
                         <Label Text="معلومات النظام" FontSize="13" TextColor="#647084" />
                         <Label Text="{Binding CreatedAtText}" FontSize="16" TextColor="#18202B" />
                         <Label Text="{Binding CanceledAtText}" FontSize="16" TextColor="#6B7280" />
+                        <Label x:Name="TotalAttendanceLabel"
+                               Text="إجمالي أيام الحضور: 0"
+                               FontSize="16"
+                               TextColor="#2563EB" />
                     </VerticalStackLayout>
 
                     <Button x:Name="CancelMembershipButton"
@@ -96,6 +100,121 @@
                             CornerRadius="6"
                             Clicked="OnBackClicked" />
                 </VerticalStackLayout>
+            </Border>
+
+            <Border x:Name="AttendancePanel"
+                    Grid.Row="2"
+                    BackgroundColor="#FFFFFF"
+                    Stroke="#DDE3EA"
+                    StrokeShape="RoundRectangle 8"
+                    Padding="22">
+                <Grid RowDefinitions="Auto,*" RowSpacing="14">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="سجل الحضور"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   TextColor="#18202B" />
+                            <Label Text="تواريخ وأوقات حضور العضو."
+                                   FontSize="13"
+                                   TextColor="#647084" />
+                        </VerticalStackLayout>
+
+                        <HorizontalStackLayout Grid.Column="1"
+                                              Spacing="6"
+                                              VerticalOptions="Center"
+                                              HorizontalOptions="End">
+                            <Label Text="السنة"
+                                   FontSize="13"
+                                   TextColor="#647084"
+                                   VerticalOptions="Center" />
+                            <Picker x:Name="YearPicker"
+                                    FontSize="12"
+                                    HeightRequest="32"
+                                    TextColor="#000000"
+                                    TitleColor="#7B8794"
+                                    BackgroundColor="#F8FAFC"
+                                    SelectedIndexChanged="OnFilterChanged" />
+
+                            <Label Text="الشهر"
+                                   FontSize="13"
+                                   TextColor="#647084"
+                                   VerticalOptions="Center" />
+                            <Picker x:Name="MonthPicker"
+                                    FontSize="12"
+                                    HeightRequest="32"
+                                    TextColor="#000000"
+                                    TitleColor="#7B8794"
+                                    BackgroundColor="#F8FAFC"
+                                    SelectedIndexChanged="OnFilterChanged" />
+
+                            <Label Text="اليوم"
+                                   FontSize="13"
+                                   TextColor="#647084"
+                                   VerticalOptions="Center" />
+                            <Picker x:Name="DayPicker"
+                                    FontSize="12"
+                                    HeightRequest="32"
+                                    TextColor="#000000"
+                                    TitleColor="#7B8794"
+                                    BackgroundColor="#F8FAFC"
+                                    SelectedIndexChanged="OnFilterChanged" />
+
+                            <Button Text="✕"
+                                    FontSize="12"
+                                    Padding="6,2"
+                                    HeightRequest="32"
+                                    WidthRequest="32"
+                                    BackgroundColor="#C2410C"
+                                    TextColor="#FFFFFF"
+                                    CornerRadius="4"
+                                    VerticalOptions="Center"
+                                    Clicked="OnClearFiltersClicked" />
+                        </HorizontalStackLayout>
+                    </Grid>
+
+                    <CollectionView Grid.Row="1"
+                                    x:Name="AttendanceHistoryCollection"
+                                    SelectionMode="None">
+                        <CollectionView.EmptyView>
+                            <Grid Padding="24">
+                                <Label Text="لا يوجد سجل حضور لهذا العضو."
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       TextColor="#647084" />
+                            </Grid>
+                        </CollectionView.EmptyView>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Border Stroke="#E6EBF1"
+                                        StrokeShape="RoundRectangle 6"
+                                        Padding="12"
+                                        Margin="0,0,0,8"
+                                        BackgroundColor="#F8FAFC">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                        <VerticalStackLayout Spacing="2">
+                                            <Label Text="{Binding AttendDateTime, StringFormat='{0:dd MMMM yyyy - hh:mm tt}'}"
+                                                   FontSize="14"
+                                                   FontAttributes="Bold"
+                                                   TextColor="#18202B" />
+                                        </VerticalStackLayout>
+
+                                        <Border Grid.Column="1"
+                                                BackgroundColor="#2563EB"
+                                                Stroke="Transparent"
+                                                StrokeShape="RoundRectangle 4"
+                                                Padding="8,4"
+                                                VerticalOptions="Center">
+                                            <Label Text="{Binding PlayType}"
+                                                   TextColor="#FFFFFF"
+                                                   FontSize="11" />
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
             </Border>
 
             <Border x:Name="NotFoundPanel"

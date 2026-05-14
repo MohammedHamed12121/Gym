@@ -94,6 +94,80 @@ public sealed class AttendanceService
 		return ReadAttendances(command);
 	}
 
+	public IReadOnlyList<Attendance> GetMemberAttendanceFiltered(int memberId, int? year, int? month, int? day, int limit = 20)
+	{
+		using var connection = OpenConnection();
+		using var command = connection.CreateCommand();
+
+		var conditions = new List<string> { "MemberId = $memberId" };
+
+		command.Parameters.AddWithValue("$memberId", memberId);
+
+		if (year.HasValue)
+		{
+			conditions.Add("AttendYear = $year");
+			command.Parameters.AddWithValue("$year", year.Value);
+		}
+
+		if (month.HasValue)
+		{
+			conditions.Add("AttendMonth = $month");
+			command.Parameters.AddWithValue("$month", month.Value);
+		}
+
+		if (day.HasValue)
+		{
+			conditions.Add("AttendDay = $day");
+			command.Parameters.AddWithValue("$day", day.Value);
+		}
+
+		var whereClause = string.Join(" AND ", conditions);
+
+		command.CommandText = $"""
+			SELECT Id, MemberId, MemberName, AttendDateTime, AttendDay, AttendMonth, AttendYear, PlayType, Status
+			FROM Attendance
+			WHERE {whereClause}
+			ORDER BY AttendDateTime DESC
+			LIMIT {limit};
+			""";
+
+		return ReadAttendances(command);
+	}
+
+	public int GetMemberAttendanceCount(int memberId, int? year, int? month, int? day)
+	{
+		using var connection = OpenConnection();
+		using var command = connection.CreateCommand();
+
+		var conditions = new List<string> { "MemberId = $memberId" };
+
+		command.Parameters.AddWithValue("$memberId", memberId);
+
+		if (year.HasValue)
+		{
+			conditions.Add("AttendYear = $year");
+			command.Parameters.AddWithValue("$year", year.Value);
+		}
+
+		if (month.HasValue)
+		{
+			conditions.Add("AttendMonth = $month");
+			command.Parameters.AddWithValue("$month", month.Value);
+		}
+
+		if (day.HasValue)
+		{
+			conditions.Add("AttendDay = $day");
+			command.Parameters.AddWithValue("$day", day.Value);
+		}
+
+		var whereClause = string.Join(" AND ", conditions);
+
+		command.CommandText = $"SELECT COUNT(*) FROM Attendance WHERE {whereClause};";
+
+		return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
+	}
+
 	public IReadOnlyList<Attendance> SearchAttendance(string? searchText)
 	{
 		var search = searchText?.Trim() ?? string.Empty;
