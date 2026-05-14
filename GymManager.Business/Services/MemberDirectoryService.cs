@@ -88,13 +88,15 @@ public sealed class MemberDirectoryService
 			return members
 				.Where(member => member.Id == memberId)
 				.Select(CreateListItem)
-				.ToList();
-		}
+		.Take(30)
+		.ToList();
+        }
 
 		return members
 			.Where(member => MatchesText(member, search))
 			.Select(CreateListItem)
-			.ToList();
+		.Take(30)
+		.ToList();
 	}
 
 	public DashboardSummary GetDashboardSummary()
@@ -305,15 +307,18 @@ public sealed class MemberDirectoryService
 	{
 		var status = GetStatus(member);
 
-		return new MemberListItem(
-			MemberId: member.Id,
-			MemberIdText: $"رقم العضوية: {member.Id}",
-			Name: member.FullName,
-			Phone: member.PhoneNumber,
-			Plan: GetPlanName(member.Plan),
-			EndDateText: $"ينتهي في {member.EndDate:dd MMMM yyyy}",
-			Status: GetStatusName(status),
-			StatusColorHex: GetStatusColorHex(status));
+		return new MemberListItem
+		{
+			MemberId = member.Id,
+			MemberIdText = $"رقم العضوية: {member.Id}",
+			Name = member.FullName,
+			Phone = member.PhoneNumber,
+			Plan = GetPlanName(member.Plan),
+			EndDateText = $"ينتهي في {member.EndDate:dd MMMM yyyy}",
+			Status = GetStatusName(status),
+			StatusColorHex = GetStatusColorHex(status),
+			CanCheckIn = status is MembershipStatus.Active or MembershipStatus.RenewSoon
+		};
 	}
 
 	private static MembershipStatus GetStatus(Member member)

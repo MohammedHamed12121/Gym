@@ -149,6 +149,55 @@ GymManager.MauiView -> GymManager.Business -> GymManager.Core
 - Search also supports member name and subscription plan.
 - The local database file is ignored by Git through `.gitignore` using `*.db`, `*.sqlite`, and `*.sqlite3`.
 
+### Members Grid Limit
+
+- **File:** `GymManager.Business/Services/MemberDirectoryService.cs`
+- Changed `.Take(100)` to `.Take(30)` in both return paths of `SearchMembers()` to limit the members grid to 30 members.
+
+### Attendance Model
+
+- **File:** `GymManager.Core/Models/Attendance.cs`
+- Created with fields: `Id`, `MemberId`, `MemberName`, `AttendDateTime`, `AttendDay`, `AttendMonth`, `AttendYear`, `PlayType`, `Status`.
+
+### Attendance Service
+
+- **File:** `GymManager.Business/Services/AttendanceService.cs`
+- Created with operations:
+  - `CheckIn(memberId, memberName, playType)` — records attendance with current timestamp
+  - `GetTodayAttendance()` — returns all check-ins for today
+  - `GetAttendanceByDate(date)` — filter attendance by specific date
+  - `GetAttendanceByMember(memberId)` — filter attendance by member
+  - `SearchAttendance(searchText)` — search attendance by member name or play type
+  - `GetTodayCheckInCount()` — returns today's check-in count for the dashboard
+- Uses SQLite with auto-created `Attendance` table, following the same patterns as `MemberDirectoryService`.
+
+### Attendance Summary Model
+
+- **File:** `GymManager.Business/Models/AttendanceSummary.cs`
+- Created record with `TodayCount` and `MonthCount`.
+
+### AttendanceService Extended
+
+- Added `GetAttendanceSummary()` — returns today and month counts.
+- Added `GetMonthCheckInCount(year, month)` — monthly check-in count.
+
+### Attendance Page
+
+- **Files:** `GymManager/AttendancePage.xaml` and `AttendancePage.xaml.cs`
+- New page accessible from the sidebar ("سجل الحضور").
+- Shows summary cards: today's attendance count and this month's attendance count.
+- Shows a grid of today's attendance records with member name, time, and play type.
+- Includes a search bar to filter attendance by member name.
+
+### Check-In Button in Members Grid
+
+- **File:** `GymManager/MainPage.xaml`
+- Added a "حضور" button in each member card in the `CollectionView` item template.
+- **File:** `GymManager/MainPage.xaml.cs`
+- Added `AttendanceService` instance.
+- Added `OnCheckInClicked` handler that calls `attendanceService.CheckIn()` with the member's ID, name, and plan.
+- Updated dashboard check-in count to use `attendanceService.GetTodayCheckInCount()` instead of hardcoded 0.
+
 ### Membership Plans And Statuses
 
 - Plans currently supported:
@@ -164,7 +213,8 @@ GymManager.MauiView -> GymManager.Business -> GymManager.Core
 
 ## Current Limitations
 
-- Attendance and payments are only represented in the dashboard, not implemented yet.
+- Attendance check-in is wired into the UI via a button in the members grid.
+- Dedicated attendance page available from the sidebar to view daily and monthly records.
 - There is no edit/delete member workflow yet.
 - There are no reports yet.
 

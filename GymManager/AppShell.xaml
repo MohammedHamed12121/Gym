@@ -34,4 +34,13 @@
             Route="MainPage" />
     </FlyoutItem>
 
+    <FlyoutItem Title="سجل الحضور"
+                Route="Attendance"
+                FlyoutDisplayOptions="AsSingleItem">
+        <ShellContent
+            Title="سجل الحضور"
+            ContentTemplate="{DataTemplate local:AttendancePage}"
+            Route="AttendancePage" />
+    </FlyoutItem>
+
 </Shell>

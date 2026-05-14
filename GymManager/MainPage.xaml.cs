@@ -8,6 +8,8 @@ public partial class MainPage : ContentPage
 {
 	private readonly MemberDirectoryService memberDirectoryService = new(
 		Path.Combine(FileSystem.AppDataDirectory, "gym-manager.db"));
+	private readonly AttendanceService attendanceService = new(
+		Path.Combine(FileSystem.AppDataDirectory, "gym-manager.db"));
 	private readonly ObservableCollection<MemberListItem> filteredMembers = [];
 
 	public MainPage()
@@ -46,6 +48,7 @@ public partial class MainPage : ContentPage
 		}
 
 		var memberId = memberDirectoryService.AddMember(request);
+		attendanceService.CheckIn(memberId, request.FullName, request.PlanName);
 		RefreshMembers();
 		ClearForm();
 
@@ -69,12 +72,28 @@ public partial class MainPage : ContentPage
 		await Shell.Current.GoToAsync($"{nameof(MemberDetailsPage)}?memberId={member.MemberId}");
 	}
 
+	private void OnCheckInClicked(object sender, EventArgs e)
+	{
+		if (sender is not Button button || button.BindingContext is not MemberListItem member)
+		{
+			return;
+		}
+
+		attendanceService.CheckIn(member.MemberId, member.Name, member.Plan);
+		RefreshMembers();
+	}
+
 	private void RefreshMembers()
 	{
+		var todayAttendees = attendanceService.GetTodayAttendance()
+			.Select(a => a.MemberId)
+			.ToHashSet();
+
 		filteredMembers.Clear();
 
 		foreach (var member in memberDirectoryService.SearchMembers(MemberSearchBar.Text))
 		{
+			member.IsCheckedIn = todayAttendees.Contains(member.MemberId);
 			filteredMembers.Add(member);
 		}
 
@@ -87,7 +106,7 @@ public partial class MainPage : ContentPage
 
 		ActiveMembersLabel.Text = summary.ActiveMembers.ToString();
 		ExpiringMembersLabel.Text = summary.ExpiringMembers.ToString();
-		CheckInsLabel.Text = summary.TodayCheckIns.ToString();
+		CheckInsLabel.Text = attendanceService.GetTodayCheckInCount().ToString();
 		PaymentsDueLabel.Text = summary.ExpiredSubscriptions.ToString();
 	}
 
