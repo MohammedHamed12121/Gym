@@ -43,4 +43,22 @@
             Route="AttendancePage" />
     </FlyoutItem>
 
+    <FlyoutItem Title="أنواع الخطط"
+                Route="PlanTypes"
+                FlyoutDisplayOptions="AsSingleItem">
+        <ShellContent
+            Title="أنواع الخطط"
+            ContentTemplate="{DataTemplate local:PlanTypePage}"
+            Route="PlanTypePage" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="الخطط"
+                Route="Plans"
+                FlyoutDisplayOptions="AsSingleItem">
+        <ShellContent
+            Title="الخطط"
+            ContentTemplate="{DataTemplate local:PlanPage}"
+            Route="PlanPage" />
+    </FlyoutItem>
+
 </Shell>

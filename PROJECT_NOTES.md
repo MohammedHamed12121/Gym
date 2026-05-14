@@ -28,8 +28,13 @@ The solution is split into three layers:
   - Does not reference Business or MAUI.
   - Current contents:
     - `Models/Member.cs`
+    - `Models/PlanType.cs` — Id, Name, Status (Active/NotActive), CreatedAt
+    - `Models/Plan.cs` — Id, Name, Description, Price, Period, PlanTypeId, Status (Active/NotActive), CreatedAt
     - `Enums/MembershipPlan.cs`
     - `Enums/MembershipStatus.cs`
+    - `Enums/PlanTypeStatus.cs` — Active=1, NotActive=2
+    - `Enums/PlanStatus.cs` — Active=1, NotActive=2
+    - `Enums/Period.cs` — Daily=1, Monthly=2, Quarter=3, Year=4
 
 - `GymManager.Business`
   - Holds application logic.
@@ -38,10 +43,18 @@ The solution is split into three layers:
   - Does not reference MAUI.
   - Current contents:
     - `Services/MemberDirectoryService.cs`
+    - `Services/AttendanceService.cs`
+    - `Services/PlanTypeService.cs` — CRUD for plan types, seed data (شهري, ربع سنوي, سنوي, يومي), status toggle
+    - `Services/PlanService.cs` — CRUD for plans, status toggle, delete
     - `Models/AddMemberRequest.cs`
     - `Models/DashboardSummary.cs`
     - `Models/MemberDetails.cs`
     - `Models/MemberListItem.cs`
+    - `Models/AddPlanTypeRequest.cs`
+    - `Models/PlanTypeListItem.cs`
+    - `Models/AddPlanRequest.cs`
+    - `Models/UpdatePlanRequest.cs`
+    - `Models/PlanListItem.cs`
 
 - `GymManager.MauiView`
   - Holds only the app UI and page event handling.
@@ -54,6 +67,10 @@ The solution is split into three layers:
     - `MemberDetailsPage.xaml.cs`
     - `MainPage.xaml`
     - `MainPage.xaml.cs`
+    - `PlanTypePage.xaml` — Add plan type form + list with status toggle buttons
+    - `PlanTypePage.xaml.cs`
+    - `PlanPage.xaml` — Add/edit plan form + list with update/disable/enable/delete buttons
+    - `PlanPage.xaml.cs`
 
 Dependency direction:
 
@@ -88,7 +105,7 @@ GymManager.MauiView -> GymManager.Business -> GymManager.Core
 ### Navigation Shell
 
 - Added a MAUI Shell sidebar/flyout in `AppShell.xaml`.
-- The sidebar currently has one item: `الرئيسية`.
+- The sidebar currently has four items: `الرئيسية`, `سجل الحضور`, `أنواع الخطط`, `الخطط`.
 - The sidebar has an Arabic header for the local gym system.
 - The Shell itself is not globally right-to-left so the Windows minimize, maximize, and close buttons stay on the right.
 - Future pages should be added as new `FlyoutItem` or `ShellContent` entries in `AppShell.xaml`.
@@ -210,6 +227,40 @@ GymManager.MauiView -> GymManager.Business -> GymManager.Core
   - `تجديد قريب`
   - `منتهي`
   - `ملغي`
+
+### PlanType Management
+
+- **Files:** `GymManager.Core/Models/PlanType.cs`, `GymManager.Core/Enums/PlanTypeStatus.cs`
+- Added `PlanType` entity with fields: Id, Name, Status (Active/NotActive), CreatedAt.
+- **Files:** `GymManager.Business/Services/PlanTypeService.cs`, `GymManager.Business/Models/AddPlanTypeRequest.cs`, `GymManager.Business/Models/PlanTypeListItem.cs`
+- `PlanTypeService` provides:
+  - `AddPlanType(request)` — inserts a new plan type with Active status
+  - `GetAllPlanTypes()` — returns all plan types with status display info
+  - `SetPlanTypeStatus(id, status)` — toggle between Active/NotActive
+  - Seeds 4 default types on first run: شهري, ربع سنوي, سنوي, يومي
+- **Files:** `GymManager/PlanTypePage.xaml` and `PlanTypePage.xaml.cs`
+- Accessible from sidebar ("أنواع الخطط").
+- Left panel: form to add a new plan type (name input + add button).
+- Right panel: list of plan types with status badge and toggle button (تعطيل/تفعيل).
+
+### Plan Management
+
+- **Files:** `GymManager.Core/Models/Plan.cs`, `GymManager.Core/Enums/PlanStatus.cs`
+- Added `Plan` entity with fields: Id, Name, Description, Price, Period (Daily/Monthly/Quarter/Year), PlanTypeId (FK), Status (Active/NotActive), CreatedAt.
+- **Files:** `GymManager.Business/Services/PlanService.cs`, `GymManager.Business/Models/AddPlanRequest.cs`, `GymManager.Business/Models/UpdatePlanRequest.cs`, `GymManager.Business/Models/PlanListItem.cs`
+- `PlanService` provides:
+  - `AddPlan(request)` — insert new plan (includes Period)
+  - `UpdatePlan(request)` — update name, description, price, period, plan type
+  - `DeletePlan(id)` — permanently delete a plan
+  - `SetPlanStatus(id, status)` — enable/disable a plan
+  - `GetAllPlans()` — join with PlanTypes for type name, includes Period name
+  - `GetPlanById(id)` — single plan lookup for editing
+  - Automatic migration adds `Period` column to existing `Plans` tables
+  - Validation for add and update requests
+- **Files:** `GymManager/PlanPage.xaml` and `PlanPage.xaml.cs`
+- Accessible from sidebar ("الخطط").
+- Left panel: form to add or edit a plan (name, description, price, period picker, plan type picker, save/cancel buttons). The form switches to edit mode when "تعديل" is clicked, with a "حفظ التعديلات" button and "إلغاء" button.
+- Right panel: list of plans as cards showing name, description, price, period, plan type, status badge, and action buttons: تعديل (populates form for editing), تعطيل/تفعيل (toggles status), حذف (with confirmation dialog).
 
 ## Current Limitations
 
